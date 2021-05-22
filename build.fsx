@@ -6,7 +6,6 @@ open Argu
 #r "netstandard"
 #endif
 open System
-open Fake.SystemHelper
 open Fake.Core
 open Fake.DotNet
 open Fake.Tools
@@ -16,6 +15,7 @@ open Fake.IO.Globbing.Operators
 open Fake.Core.TargetOperators
 open Fake.Api
 open Fake.BuildServer
+open Fake.JavaScript
 open Fantomas
 //open Fantomas.FakeHelpers
 
@@ -44,6 +44,7 @@ let environVarAsBoolOrDefault varName defaultValue =
 let productName = "Elmish.Throttle.1"
 let sln = "Elmish.Throttle.sln"
 
+let invalid = __SOURCE_DIRECTORY__ @@ "dlfkjdlfjdlkfjldjf"
 
 let srcCodeGlob =
     !! (__SOURCE_DIRECTORY__  @@ "src/**/*.fs")
@@ -223,20 +224,6 @@ module dotnet =
 
     let fcswatch optionConfig args =
         tool optionConfig "fcswatch" args
-
-    let fsharpAnalyzer optionConfig args =
-        tool optionConfig "fsharp-analyzers" args
-
-module FSharpAnalyzers =
-    type Arguments =
-    | Project of string
-    | Analyzers_Path of string
-    | Fail_On_Warnings of string list
-    | Ignore_Files of string list
-    | Verbose
-    with
-        interface IArgParserTemplate with
-            member s.Usage = ""
 
 
 //open DocsTool.CLIArgs
@@ -443,22 +430,17 @@ let dotnetBuild ctx =
 
         }) sln
 
-let fsharpAnalyzers _ =
-    let argParser = ArgumentParser.Create<FSharpAnalyzers.Arguments>(programName = "fsharp-analyzers")
-    !! srcGlob
-    |> Seq.iter(fun proj ->
-        let args  =
-            [
-                FSharpAnalyzers.Analyzers_Path (__SOURCE_DIRECTORY__ </> "packages/analyzers")
-                FSharpAnalyzers.Arguments.Project proj
-                FSharpAnalyzers.Arguments.Fail_On_Warnings [
-                    "BDH0002"
-                ]
-                FSharpAnalyzers.Verbose
-            ]
-            |> argParser.PrintCommandLineArgumentsFlat
-        dotnet.fsharpAnalyzer id args
-    )
+let yarnInstall _ = 
+    let foo = Yarn.exec "install" (fun _ -> Yarn.defaultYarnParams)
+    printfn "%A" foo
+
+let yarnBuild _ = 
+    let foo = Yarn.exec "build" (fun _ -> Yarn.defaultYarnParams)
+    printfn "%A" foo
+
+let yarnTest ctx =
+    let foo = Yarn.exec "test" (fun _ -> Yarn.defaultYarnParams)
+    printfn "%A" foo
 
 let dotnetTest ctx =
     let excludeCoverage =
@@ -666,8 +648,9 @@ Target.create "UpdateChangelog" updateChangelog
 Target.createBuildFailure "RevertChangelog" revertChangelog  // Do NOT put this in the dependency chain
 Target.createFinal "DeleteChangelogBackupFile" deleteChangelogBackupFile  // Do NOT put this in the dependency chain
 Target.create "DotnetBuild" dotnetBuild
-Target.create "FSharpAnalyzers" fsharpAnalyzers
-Target.create "DotnetTest" dotnetTest
+Target.create "YarnInstall" yarnInstall
+Target.create "YarnBuild" yarnBuild
+Target.create "YarnTest" yarnTest
 Target.create "GenerateCoverageReport" generateCoverageReport
 Target.create "WatchTests" watchTests
 Target.create "GenerateAssemblyInfo" generateAssemblyInfo
@@ -711,8 +694,9 @@ Target.create "ReleaseDocs" releaseDocs
 
 "DotnetRestore"
     ==> "DotnetBuild"
-    ==> "FSharpAnalyzers"
-    ==> "DotnetTest"
+    ==> "YarnInstall"
+    ==> "YarnBuild"
+    ==> "YarnTest"
     =?> ("GenerateCoverageReport", not disableCodeCoverage)
     ==> "DotnetPack"
     ==> "SourceLinkTest"

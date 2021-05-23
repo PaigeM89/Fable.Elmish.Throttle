@@ -30,15 +30,6 @@ let freePromise (id : Id) ms =
     return id
   }
 
-// let getReleaseCmd (msg : Msg) mdl =
-//   match msg with
-//   | Throttle (id, ts) ->
-//     let ms = (ts.TotalMilliseconds |> int)
-//     let promise = freePromise id
-//     let mdl = Map.add id Throttled mdl
-//     mdl, Cmd.OfPromise.either promise (ms) Release OnError
-//   | _ -> mdl, Cmd.none
-
 let throttle (throttler : Throttler) id (ts : TimeSpan) (ev) =
   match Map.tryFind id throttler with
   | Some Status.Throttled -> None

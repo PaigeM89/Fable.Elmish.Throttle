@@ -1,11 +1,72 @@
-# Fable.Fable.Elmish.Throttle
+# Elmish.Throttle
 
-Usage:
+Throttles events so they can occur at max once per time interval.
+
+## Usage
+
+Store the `ThrottleState` in your model:
+
+```fsharp
+type Model = {
+    Clicks : int
+    ThrottleState: Map<string, Throttle.Status>
+}
 ```
 
+And have a way to dispatch a message from the throttler:
+
+```fsharp
+type Msg = 
+| IncrementClick
+| ThrottleMsg of Throttle.Msg
 ```
 
-### Building
+On your event, call `throttle`. Note how we identify the thing we want to throttle with `"button-click"`. If you want multiple things to throttle each other, use the same Id.
+
+```fsharp
+let throttleOnClick model ev =
+    throttle model.ThrottleState "button-click" (TimeSpan.FromSeconds 1.) ev
+
+let button() =
+      button [ OnClick (fun ev ->
+        match throttleOnClick model ev with
+        | None -> () // if the event is throttled, nothing happens
+        | Some (ev, throttleMsg) ->
+            // if the event is not throttled, it is returned here
+
+            // note that you must dispatch the throttle message and handle it
+            dispatch (ThrottleMsg throttleMsg)
+            IncrementClick |> dispatch
+        )
+    ] [ str "Click me!" ]
+```
+
+Handle the throttle message by calling `handleThrottleMsg`. You'll get back a command to release the resource once the timer expires, so it's important to make sure that command is run.
+
+```fsharp
+let update msg model : (Model * Cmd<Msg>)=
+    match msg with
+    | IncrementClick -> { model with Clicks = model.Clicks + 1}, Cmd.none
+    | ThrottleMsg throttleMsg ->
+        // let the throttler handle the message
+        let throttleResult = handleThrottleMsg throttleMsg model.ThrottleState
+        match throttleResult with
+        // get back a new state and a command 
+        | Ok (throttleState, throttleCmd) ->
+            // map the command so it's run
+            { model with ThrottleState = throttleState }, Cmd.map ThrottleMsg throttleCmd
+        | Error e ->
+            printfn "Error throttling: %A" e
+            model, Cmd.none
+```
+
+Run the example to see it in action.
+
+## How is this different from debouncing?
+
+Debouncing resets the timer on an action, meaning continuous actions (such as clicking a button repeatedly) won't ever fire an event. This throttler limits actions to once per X interval, allowing some events through even if the events are continuous. Pick the one that suits your needs, neither one fits all scenarios.
+
+## Building
 
 Make sure the following **requirements** are installed in your system:
 

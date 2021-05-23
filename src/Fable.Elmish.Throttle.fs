@@ -1,7 +1,6 @@
-module Fable.Elmish.Throttle
+module Elmish.Throttle
 
 open System
-open Browser.Types
 open Elmish
 
 /// Usage:
@@ -26,20 +25,19 @@ type Msg =
 
 // free the id in X time
 let freePromise (id : Id) ms =
-  printfn "creating promise to free %s in %i" id ms
   promise {
     do! Promise.sleep ms
     return id
   }
 
-let getReleaseCmd (msg : Msg) mdl =
-  match msg with
-  | Throttle (id, ts) ->
-    let ms = (ts.TotalMilliseconds |> int)
-    let promise = freePromise id
-    let mdl = Map.add id Throttled mdl
-    mdl, Cmd.OfPromise.either promise (ms) Release OnError
-  | _ -> mdl, Cmd.none
+// let getReleaseCmd (msg : Msg) mdl =
+//   match msg with
+//   | Throttle (id, ts) ->
+//     let ms = (ts.TotalMilliseconds |> int)
+//     let promise = freePromise id
+//     let mdl = Map.add id Throttled mdl
+//     mdl, Cmd.OfPromise.either promise (ms) Release OnError
+//   | _ -> mdl, Cmd.none
 
 let throttle (throttler : Throttler) id (ts : TimeSpan) (ev) =
   match Map.tryFind id throttler with

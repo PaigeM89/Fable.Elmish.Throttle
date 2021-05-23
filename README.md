@@ -1,11 +1,9 @@
 # Fable.Fable.Elmish.Throttle
 
+Usage:
+```
 
-## How to use this templates ?
-
-1. Add your code into `src` folder.
-2. Add your test into `tests` folder. All the tests are run against [mocha](https://www.npmjs.com/package/mocha)
-3. You can now run `build.cmd MochaTest`. This is build the lib for you and run the tests.
+```
 
 ### Building
 
@@ -23,7 +21,7 @@ Then you just need to type `./build.cmd` or `./build.sh`
 In order to push your package to [nuget.org][https://nuget.org] you need to add your API keys to `NUGET_KEY` environmental variable.
 You can create a key [here](https://www.nuget.org/account/ApiKeys).
 
-- Update RELEASE_NOTES with a new version, data and release notes [ReleaseNotesHelper](http://fake.build/apidocs/fake-releasenoteshelper.html).
+- Update CHANGELOG.md with a new version, data and release notes [ReleaseNotesHelper](http://fake.build/apidocs/fake-releasenoteshelper.html).
 Ex:
 
 ```

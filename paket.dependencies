@@ -8,6 +8,9 @@ nuget Fable.Elmish
 nuget Fable.Browser.Dom
 nuget Fable.Promise
 
+nuget Fable.React
+nuget Fable.Elmish.React
+
 // [ FAKE GROUP ]
 group Build
     source https://www.nuget.org/api/v2

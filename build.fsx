@@ -64,7 +64,7 @@ let srcAndTest =
 let distDir = __SOURCE_DIRECTORY__  @@ "dist"
 let distGlob = distDir @@ "*.nupkg"
 
-let coverageThresholdPercent = 80
+let coverageThresholdPercent = 0
 let coverageReportDir =  __SOURCE_DIRECTORY__  @@ "docs" @@ "coverage"
 
 
@@ -72,7 +72,7 @@ let docsDir = __SOURCE_DIRECTORY__  @@ "docs"
 let docsSrcDir = __SOURCE_DIRECTORY__  @@ "docsSrc"
 let docsToolDir = __SOURCE_DIRECTORY__ @@ "docsTool"
 
-let gitOwner = "MyGithubUsername"
+let gitOwner = "PaigeM89"
 let gitRepoName = "Elmish.Throttle.1"
 
 let gitHubRepoUrl = sprintf "https://github.com/%s/%s" gitOwner gitRepoName
@@ -430,11 +430,6 @@ let dotnetBuild ctx =
 
         }) sln
 
-let yarnParams = {
-    Yarn.defaultYarnParams with
-        WorkingDirectory = "./tests"
-}
-
 let yarnInstall _ = 
     let foo = Yarn.exec "install" (fun _ -> Yarn.defaultYarnParams)
     printfn "%A" foo
@@ -468,29 +463,6 @@ let dotnetTest ctx =
                 c.Common
                 |> DotNet.Options.withAdditionalArgs args
             }) sln
-
-let generateCoverageReport _ =
-    let coverageReports =
-        !!"tests/**/coverage*.xml"
-        |> String.concat ";"
-    let sourceDirs =
-        !! srcGlob
-        |> Seq.map Path.getDirectory
-        |> String.concat ";"
-    let independentArgs =
-            [
-                sprintf "-reports:\"%s\""  coverageReports
-                sprintf "-targetdir:\"%s\"" coverageReportDir
-                // Add source dir
-                sprintf "-sourcedirs:\"%s\"" sourceDirs
-                // Ignore Tests and if AltCover.Recorder.g sneaks in
-                sprintf "-assemblyfilters:\"%s\"" "-*.Tests;-AltCover.Recorder.g"
-                sprintf "-Reporttypes:%s" "Html"
-            ]
-    let args =
-        independentArgs
-        |> String.concat " "
-    dotnet.reportgenerator id args
 
 let watchTests _ =
     !! testsGlob
@@ -656,7 +628,6 @@ Target.create "DotnetBuild" dotnetBuild
 Target.create "YarnInstall" yarnInstall
 Target.create "YarnBuild" yarnBuild
 Target.create "YarnTest" yarnTest
-Target.create "GenerateCoverageReport" generateCoverageReport
 Target.create "WatchTests" watchTests
 Target.create "GenerateAssemblyInfo" generateAssemblyInfo
 Target.create "DotnetPack" dotnetPack
@@ -694,15 +665,13 @@ Target.create "ReleaseDocs" releaseDocs
 "BuildDocs" ==> "ReleaseDocs"
 "BuildDocs" ?=> "PublishToNuget"
 "DotnetPack" ?=> "BuildDocs"
-"GenerateCoverageReport" ?=> "ReleaseDocs"
 
 
 "DotnetRestore"
     ==> "DotnetBuild"
     ==> "YarnInstall"
     ==> "YarnBuild"
-    // ==> "YarnTest"
-    =?> ("GenerateCoverageReport", not disableCodeCoverage)
+    ==> "YarnTest"
     ==> "DotnetPack"
     ==> "SourceLinkTest"
     ==> "PublishToNuGet"

@@ -3,6 +3,7 @@ source https://api.nuget.org/v3/index.json
 content:none
 
 nuget FSharp.Core redirects:force
+nuget Microsoft.SourceLink.GitHub 1.0.0 copy_local: true
 nuget Fable.Core
 nuget Fable.Elmish
 nuget Fable.Browser.Dom

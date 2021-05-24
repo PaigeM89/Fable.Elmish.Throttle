@@ -430,6 +430,11 @@ let dotnetBuild ctx =
 
         }) sln
 
+let yarnParams = {
+    Yarn.defaultYarnParams with
+        WorkingDirectory = "./tests"
+}
+
 let yarnInstall _ = 
     let foo = Yarn.exec "install" (fun _ -> Yarn.defaultYarnParams)
     printfn "%A" foo
@@ -696,7 +701,7 @@ Target.create "ReleaseDocs" releaseDocs
     ==> "DotnetBuild"
     ==> "YarnInstall"
     ==> "YarnBuild"
-    ==> "YarnTest"
+    // ==> "YarnTest"
     =?> ("GenerateCoverageReport", not disableCodeCoverage)
     ==> "DotnetPack"
     ==> "SourceLinkTest"

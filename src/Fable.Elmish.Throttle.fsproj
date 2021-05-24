@@ -8,6 +8,18 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+  <PropertyGroup>
+    <Title>Fable.Elmish.Throttle</Title>
+    <Description>Provides throttling for actions in an Elmish architecture.</Description>
+    <PackageTags>f#, fsharp, fable, elmish</PackageTags>
+    <PackageProjectUrl>https://github.com/PaigeM89/Fable.Elmish.Throttle</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/PaigeM89/Fable.Elmish.Throttle/blob/main/LICENSE.md</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/PaigeM89/Fable.Elmish.Throttle</RepositoryUrl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Fable.Elmish.Throttle.fs" />
   </ItemGroup>

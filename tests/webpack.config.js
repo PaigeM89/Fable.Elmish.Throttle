@@ -6,10 +6,10 @@ function resolve(filePath) {
 }
 
 var babelOptions = {
-    "presets": [
-        [resolve("../node_modules/babel-preset-env"), {
-            "modules": false
-        }]
+    "presets": [ "@babel/preset-env"
+        // [resolve("../node_modules/babel-preset-env"), {
+        //     "modules": false
+        // }]
     ]
 }
 
@@ -27,7 +27,8 @@ module.exports = {
             use: {
                 loader: "fable-loader",
                 options: {
-                    babel: babelOptions
+                    presets: [ "@babel/preset-env" ]
+                    //babel: babelOptions
                 }
             }
         }, {

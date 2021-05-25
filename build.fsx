@@ -41,10 +41,8 @@ let environVarAsBoolOrDefault varName defaultValue =
 // Metadata and Configuration
 //-----------------------------------------------------------------------------
 
-let productName = "Elmish.Throttle.1"
+let productName = "Elmish.Throttle"
 let sln = "Elmish.Throttle.sln"
-
-let invalid = __SOURCE_DIRECTORY__ @@ "dlfkjdlfjdlkfjldjf"
 
 let srcCodeGlob =
     !! (__SOURCE_DIRECTORY__  @@ "src/**/*.fs")
@@ -73,7 +71,7 @@ let docsSrcDir = __SOURCE_DIRECTORY__  @@ "docsSrc"
 let docsToolDir = __SOURCE_DIRECTORY__ @@ "docsTool"
 
 let gitOwner = "PaigeM89"
-let gitRepoName = "Elmish.Throttle.1"
+let gitRepoName = "Fable.Elmish.Throttle"
 
 let gitHubRepoUrl = sprintf "https://github.com/%s/%s" gitOwner gitRepoName
 
@@ -673,7 +671,7 @@ Target.create "ReleaseDocs" releaseDocs
     ==> "YarnBuild"
     ==> "YarnTest"
     ==> "DotnetPack"
-    ==> "SourceLinkTest"
+//    ==> "SourceLinkTest"
     ==> "PublishToNuGet"
     ==> "GitRelease"
     ==> "GitHubRelease"

@@ -1,4 +1,4 @@
-CONTENT: NONE
+STORAGE: NONE
 NUGET
   remote: https://www.nuget.org/api/v2
     Fable.Browser.Blob (1.1) - restriction: >= netstandard2.0

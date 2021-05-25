@@ -7,6 +7,8 @@ Throttles events so they can occur at max once per time interval.
 Store the `ThrottleState` in your model:
 
 ```fsharp
+open Fable.Elmish.Throttle
+
 type Model = {
     Clicks : int
     ThrottleState: Map<string, Throttle.Status>
